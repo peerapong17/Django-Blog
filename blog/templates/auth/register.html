@@ -22,7 +22,7 @@
     {% endif %}
     {% endfor %}
     {% endif %}
-    <form action="/register" method="POST">
+    <form action="{% url 'registerUser' %}" method="POST">
         {% csrf_token %}
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
@@ -40,7 +40,7 @@
             <label for="confirmPassword" class="form-label">Confirm Password</label>
             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
         </div>
-        <a href="/">Already have an account?</a>
+        <a href="{% url 'loginUser' %}">Already have an account?</a>
         <button type="submit" class="btn btn-primary w-100">Register</button>
     </form>
 </div>

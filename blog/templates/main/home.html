@@ -61,7 +61,7 @@
                             </div>
                             <hr>
                             <p class="card-text">{{blog.content|slice:"0:70"}}</p>
-                            <a href="/blog/{{blog.category}}" class="badge bg-info mb-2">{{blog.category}}</a>
+                            <a href="{% url 'blogFilteredByCategory' blog.category %}" class="badge bg-info mb-2">{{blog.category}}</a>
                             <div class="card-actions d-flex justify-content-between align-items-center">
                                 <a href="{% url 'blogDetail' blog.id %}" class="btn btn-secondary">See More...</a>
                                 <form action="/like/{{blog.id}}">

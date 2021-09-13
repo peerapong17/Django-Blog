@@ -43,12 +43,12 @@
                 <select id="category" class="form-select mb-3" name="category">
                     <option selected disabled>Category</option>
                     {% for category in categories %}
-                    <option value="{{category.name}}">{{category.name}}</option>
+                    <option value="{{category}}">{{category}}</option>
                     {% endfor %}
                 </select>
                 <div>
                     <button type="submit" class="btn btn-primary w-100 mb-2">Create</button>
-                    <a href="/home" class="btn btn-warning w-100">Back</a>
+                    <a href="{% url 'home' %}" class="btn btn-warning w-100">Back</a>
                 </div>
             </form>
         </div>

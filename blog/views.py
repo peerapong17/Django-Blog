@@ -1,50 +1,8 @@
-from threading import Timer
-from django.contrib import messages
-from django.core import paginator
 from django.core import serializers as core_serializers
 from .models import Comments, Blog
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-
-
-def login_user(request):
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        # user = authenticate(username="test", password="123123")
-        user = User.objects.filter(username=username).first()
-        if user is not None:
-            login(request, user)
-            return redirect('/home')
-        else:
-            messages.error(request, "User with given email does not exist")
-
-    return render(request, "auth/login.html")
-
-
-def register_user(request):
-    if request.method == "POST":
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']
-        confirmPassword = request.POST['confirmPassword']
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "This email already in-use")
-        elif password != confirmPassword:
-            messages.error(request, "Password does not match")
-        else:
-            user = User.objects.create(
-                username=username,
-                email=email,
-                password=password
-            )
-            user.save()
-            messages.success(request, "Create account success")
-            return redirect("/")
-    return render(request, "auth/register.html")
 
 
 def home(request):
@@ -88,8 +46,7 @@ def home(request):
 
 
 def create_blog(request):
-    categories = [{"name": "Travel"},
-                  {"name": "Food"}, {"name": "Culture"}, {"name": "Tradition"}, {"name": "Social"}]
+    categories = ["Travel", "Food", "Culture", "Tradition", "Social"]
     if request.method == "POST":
         title = request.POST['title']
         content = request.POST['content']
@@ -119,8 +76,7 @@ def get_blog_by_id(request, blogId):
 
 
 def update_blog(request, blogId):
-    categories = [{"name": "Travel"},
-                  {"name": "Food"}, {"name": "Culture"}, {"name": "Tradition"}, {"name": "Social"}]
+    categories = ["Travel", "Food", "Culture", "Tradition", "Social"]
     if request.method == "POST":
         blog = Blog.objects.get(id=blogId)
         blog.title = request.POST.get('title')
@@ -146,7 +102,7 @@ def blog_detail(request, blogId):
 def delete_blog(request, blogId):
     blog = Blog.objects.get(id=blogId)
     blog.delete()
-    return redirect("/user-blog")
+    return redirect("userBlog")
 
 
 def add_comment(request, blogId):
@@ -171,7 +127,7 @@ def like_blog(request, blogId):
     else:
         blog.likes.append(userId)
         blog.save()
-    return redirect("/home")
+    return redirect("home")
 
 
 def like_blog_detail(request, blogId):
@@ -244,8 +200,3 @@ def blog_filtered_by_writer(request, writer):
         blogsPerPage = paginator.get_page(1)
 
     return render(request, "main/home.html", {"blogs": blogsPerPage, "categories": categories, "page": page, "popularBlogs": popularBlogs})
-
-
-def logout_user(request):
-    logout(request)
-    return redirect('/')
