@@ -1,0 +1,30 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    width: 400px;
+    background: rgb(255, 218, 224);
+    border-radius: 7px;
+    box-shadow: 0px 1px 5px rgb(155, 155, 155);
+    padding: 20px 10px;
+}
+
+a{
+    float: right;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
+
+a:hover{
+    text-decoration: underline;
+}
+
+.alert{
+    width: 400px;
+}

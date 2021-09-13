@@ -1,0 +1,47 @@
+{% extends 'layout/auth.html' %}
+{% load static %}
+
+{% block title %}
+<link rel="stylesheet" href="{% static 'style/register.css' %}">
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == "success" %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% else %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    <form action="/register" method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="username" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+        </div>
+        <a href="/">Already have an account?</a>
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+</div>
+{% endblock content %}

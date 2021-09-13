@@ -1,0 +1,58 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}
+<script src="{% static 'script/createBlog.js' %}" defer></script>
+{% endblock title %}
+
+
+{% block content %}
+
+<style>
+    #image {
+        display: none;
+    }
+
+    #show-image {
+        visibility: visible;
+
+    }
+</style>
+
+<div class="container w-100 d-flex align-items-center flex-column justify-content-center">
+    <div class="row w-100 justify-content-center mt-5">
+
+        <div class="col col-lg-8">
+
+            <div id="alert-box">
+            </div>
+            <form id="create-blog-form" method="POST" enctype='multipart/form-data' class="mb-5">
+                {% csrf_token %}
+                <img alt="image-create-blog" width="100%" height="450px" class="mb-4" id="image" />
+                <div class="mb-3">
+                    <input id="file" class="form-control" type="file" name="image">
+                </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input id="title" type="text" class="form-control" id="title" name="title">
+                </div>
+                <div class="mb-3">
+                    <label for="content" class="form-label">Content</label>
+                    <textarea id="content" type="text" class="form-control" id="content" name="content"></textarea>
+                </div>
+                <select id="category" class="form-select mb-3" name="category">
+                    <option selected disabled>Category</option>
+                    {% for category in categories %}
+                    <option value="{{category.name}}">{{category.name}}</option>
+                    {% endfor %}
+                </select>
+                <div>
+                    <button type="submit" class="btn btn-primary w-100 mb-2">Create</button>
+                    <a href="/home" class="btn btn-warning w-100">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
