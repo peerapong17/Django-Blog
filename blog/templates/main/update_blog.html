@@ -31,13 +31,13 @@
                 <select id="category" class="form-select mb-3" name="category">
                     <option disabled>Category</option>
                     {% for category in categories %}
-                    <option value="{{category}}">{{category}}</option>
+                    <option value="{{category.id}}">{{category.name}}</option>
                     {% endfor %}
                 </select>
                 <div class="float-end mb-3">
                     <button type="submit" class="btn btn-primary">Update</button>
-                    <a href="/delete-blog/{{blog.id}}" class="btn btn-danger">Delete</a>
-                    <a href="/user-blog" class="btn btn-warning">Back</a>
+                    <a href="{% url 'deleteBlog' blog.id %}" class="btn btn-danger" onclick="return window.confirm('Are you sure?')">Delete</a>
+                    <a href="{% url 'userBlog' %}" class="btn btn-warning">Back</a>
                 </div>
             </form>
         </div>

@@ -3,12 +3,12 @@
 {% load humanize %}
 
 {% block title %}
-    <link rel="stylesheet" href="{% static 'style/blog-detail.css' %}">
+<link rel="stylesheet" href="{% static 'style/blog-detail.css' %}">
 {% endblock title %}
 
 {% block content %}
 <style>
-    
+
 </style>
 
 <div class="container">
@@ -25,9 +25,11 @@
                 </div>
                 <hr>
                 <p class="card-text">{{blog.content}}</p>
-                <a href="{% url 'blogFilteredByCategory' blog.category %}" class="badge bg-info">{{blog.category}}</a>
+                <a href="{% url 'blogFilteredByCategory' blog.category_id %}"
+                    class="badge bg-info">{{blog.category}}</a>
                 <div class="d-flex justify-content-between m-0  align-items-center">
-                    <a href="{% url 'blogFilteredByWriter' blog.writer %}" class="card-text m-0 d-flex align-items-center">By  <strong> {{blog.writer}}</strong></a>
+                    <a href="{% url 'blogFilteredByWriter' blog.writer %}"
+                        class="card-text m-0 d-flex align-items-center">By <strong> {{blog.writer}}</strong></a>
                     <div class="d-flex justify-content-center">
                         <p class="card-text m-0 d-flex align-items-center">{{blog.created_at}}</p>
                         <form action="/like/blog/{{blog.id}}">
@@ -51,8 +53,14 @@
         {% for comment in comments %}
         <div class="card border-dark mb-3">
             <div class="card-header">{{comment.username}}</div>
-            <div class="card-body text-dark">
+            <div class="card-body text-dark d-flex justify-content-between align-items-center">
                 <p class="card-text">{{comment.comment}}</p>
+                {% if comment.username == user.username %}
+                <div class="d-flex">
+                    <a class="btn btn-primary">Update</a>
+                    <a href="{% url 'deleteComment' blog.id comment.id %}" class="btn btn-danger ms-1">Delete</a>
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

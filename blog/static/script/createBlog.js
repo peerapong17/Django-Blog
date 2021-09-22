@@ -38,7 +38,7 @@ form.addEventListener("submit", (e) => {
     .then((res) => {
       showAlert("success", res.message);
       setTimeout(() => {
-        window.location.href = "http://127.0.0.1:8000/home";
+        window.location.href = "http://127.0.0.1:8000/";
       }, 3000);
     })
     .catch((err) => {
