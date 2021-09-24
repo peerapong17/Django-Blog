@@ -23,8 +23,9 @@
     {% endif %}
     {% endfor %}
     {% endif %}
-    <form action="{% url 'loginUser' %}" method="POST">
+    <form action="{% url 'loginUser' %}" method="POST" class="p-4 bg-primary bg-opacity-10">
         {% csrf_token %}
+        <h3 class="text-center mb-4">Login</h3>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username">

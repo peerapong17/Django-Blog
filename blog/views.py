@@ -4,6 +4,7 @@ from .models import Comment, Blog
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 
@@ -67,11 +68,10 @@ def create_blog(request):
         content = request.POST['content']
         image = request.FILES['image']
         category = request.POST['category']
-        userId = request.user.id
-        writer = request.user.username
+        writer_id = request.user.id
 
         blog = Blog.objects.create(
-            title=title, content=content, userId=userId, image=image, category_id=category, writer=writer)
+            title=title, content=content, image=image, category_id=category, writer_id=writer_id)
         blog.save()
         return JsonResponse({"message": "Blog created successfully"})
 
@@ -80,8 +80,10 @@ def create_blog(request):
 
 @login_required(login_url='loginUser')
 def user_blog(request):
-    userId = request.user.id
-    blogs = Blog.objects.filter(userId=userId).all().order_by("-pk")
+    user_id = request.user.id
+    # blogs = Blog.objects.filter(userId=user_id).all().order_by("-pk")
+    user = User.objects.filter(id=user_id).first()
+    blogs = user.blog_set.all()
     return render(request, "main/user_blog.html", {"blogs": blogs})
 
 
@@ -99,7 +101,7 @@ def update_blog(request, blogId):
         blog = Blog.objects.get(id=blogId)
         blog.title = request.POST.get('title')
         blog.content = request.POST.get('content')
-        blog.category = request.POST['category']
+        blog.category_id = request.POST['category']
 
         if request.FILES:
             blog.image = request.FILES['image']
@@ -110,8 +112,8 @@ def update_blog(request, blogId):
 
 
 @login_required(login_url='loginUser')
-def blog_detail(request, blogId):
-    blog = Blog.objects.filter(id=blogId).first()
+def blog_detail(request, blog_id):
+    blog = Blog.objects.filter(id=blog_id).first()
     blog.views += 1
     blog.save()
     comments = blog.comment_set.all()

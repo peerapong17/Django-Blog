@@ -5,7 +5,7 @@ from .views import home, create_blog, blog_detail, user_blog, update_blog, delet
 urlpatterns = [
     path("", home, name="home"),
     path("create-blog", create_blog),
-    path("blog-detail/<int:blogId>", blog_detail, name="blogDetail"),
+    path("blog-detail/<int:blog_id>", blog_detail, name="blogDetail"),
     path("user-blog", user_blog, name='userBlog'),
     path("update-blog/<int:blogId>", update_blog, name='updateBlog'),
     path("get-blog/<int:blogId>", get_blog_by_id),
