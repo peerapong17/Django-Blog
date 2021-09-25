@@ -3,7 +3,7 @@
 {% load humanize %}
 
 {% block title %}
-    <link rel="stylesheet" href="{% static 'style/home.css' %}">
+<link rel="stylesheet" href="{% static 'style/home.css' %}">
 {% endblock title %}
 
 {% block content %}
@@ -62,23 +62,40 @@
                             </div>
                             <hr>
                             <p class="card-text">{{blog.content|slice:"0:70"}}</p>
-                            <a href="{% url 'blogFilteredByCategory' blog.category_id %}" class="badge bg-info mb-2">{{blog.category.name}}</a>
+                            <a href="{% url 'blogFilteredByCategory' blog.category_id %}"
+                                class="badge bg-info mb-2">{{blog.category.name}}</a>
                             <div class="card-actions d-flex justify-content-between align-items-center">
                                 <a href="{% url 'blogDetail' blog.id %}" class="btn btn-secondary">See More...</a>
-                                <form action="/like/{{blog.id}}">
-                                    {% if user.id in blog.likes %}
-                                    <button class="btn"><i class="isliked fas fa-thumbs-up"></i></button>
+                                {% if user.id in blog.likes %}
+                                <div class="d-flex flex-column">
+                                    <a href="{% url 'likeBlog' blog.id %}" class="btn">
+                                        <i class="isliked fas fa-thumbs-up">
+                                        </i>
+                                    </a>
+                                    {% if blog.likes|length > 1 %}
+                                    <span>You and {{blog.likes|length}} like this blog</span>
                                     {% else %}
-                                    <button class="btn"><i class="far fa-thumbs-up"></i></button>
+                                    <span>You like this blog</span>
                                     {% endif %}
-                                </form>
+                                </div>
+                                {% else %}
+                                <div class="d-flex flex-column">
+                                    <a href="{% url 'likeBlog' blog.id %}" class="btn">
+                                        <i class="far fa-thumbs-up">
+                                        </i>
+                                    </a>
+                                    {% if blog.likes %}
+                                    <span>{{blog.likes|length}} like this blog</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
                 {% else %}
-                    <h1 class="ms-5">No blog created yet...</h1>
+                <h1 class="ms-5">No blog created yet...</h1>
                 {% endif %}
             </div>
         </div>

@@ -43,7 +43,8 @@
                 </div>
             </div>
         </div>
-        <form action="/comment/{{blog.id}}" action="POST" class="mt-4">
+        <form action="{% url 'addComment' blog.id %}" method="POST" class="mt-4">
+            {% csrf_token %}
             <div class="form-floating">
                 <input type="text" class="form-control" id="comment" name="comment" placeholder="comment">
                 <label for="comment">Comment</label>
@@ -52,10 +53,10 @@
         </form>
         {% for comment in comments %}
         <div class="card border-dark mb-3">
-            <div class="card-header">{{comment.username}}</div>
+            <div class="card-header">{{comment.user.username}}</div>
             <div class="card-body text-dark d-flex justify-content-between align-items-center">
                 <p class="card-text">{{comment.comment}}</p>
-                {% if comment.username == user.username %}
+                {% if comment.user.username == user.username %}
                 <div class="d-flex">
                     <a class="btn btn-primary">Update</a>
                     <a href="{% url 'deleteComment' blog.id comment.id %}" class="btn btn-danger ms-1">Delete</a>

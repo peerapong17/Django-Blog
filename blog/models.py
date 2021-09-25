@@ -24,7 +24,6 @@ class Blog(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
-    username = models.TextField(default="anonymous")
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True)
     comment = models.CharField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)

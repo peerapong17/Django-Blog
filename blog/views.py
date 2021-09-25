@@ -114,6 +114,7 @@ def update_blog(request, blogId):
 @login_required(login_url='loginUser')
 def blog_detail(request, blog_id):
     blog = Blog.objects.filter(id=blog_id).first()
+
     blog.views += 1
     blog.save()
     comments = blog.comment_set.all()
@@ -129,11 +130,12 @@ def delete_blog(request, blogId):
 
 @login_required(login_url='loginUser')
 def add_comment(request, blogId):
-    userId = request.user.id
-    username = request.user.username
-    comment = Comment.objects.create(
-        userId=userId, username=username, blog_id=blogId, comment=request.GET.get("comment"))
-    comment.save()
+    if request.method == "POST":
+        userId = request.user.id
+        comment_message = request.POST.get("comment")
+        comment = Comment.objects.create(
+            user_id=userId, blog_id=blogId, comment=comment_message)
+        comment.save()
     return redirect(f"/blog-detail/{blogId}")
 
 
