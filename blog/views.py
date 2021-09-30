@@ -1,33 +1,26 @@
+from .models import Blog
 from category.models import Category
-from django.core import serializers as core_serializers
-from .models import Comment, Blog
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from comment.models import Comment
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
+from django.http import HttpResponse, JsonResponse
+from django.core import serializers as core_serializers
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 
 
 @login_required(login_url='loginUser')
-def home(request):
-    blogs = Blog.objects.all().order_by("-pk")
+def home(request, category_id=None, writer=None):
+    blogs = False
     popularBlogs = Blog.objects.all().order_by("-views")[:3]
-    food = Category.objects.get(id=1)
-    travel = Category.objects.get(id=2)
-    culture = Category.objects.get(id=3)
-    tradition = Category.objects.get(id=4)
-    foodLength = food.blog_set.all().count()
-    travelLength = travel.blog_set.all().count()
-    cultureLength = culture.blog_set.all().count()
-    traditionLength = tradition.blog_set.all().count()
-    # socialLength = len([a for a in blogs if a.category == "Social"])
-    # foodLength = len([a for a in blogs if a.category == "Food"])
-    # travelLength = len([a for a in blogs if a.category == "Travel"])
-    # cultureLength = len([a for a in blogs if a.category == "Culture"])
-    # traditionLength = len([a for a in blogs if a.category == "Tradition"])
-    # socialLength = len([a for a in blogs if a.category == "Social"])
-    categories = [{"name": travel, "length": travelLength},
-                  {"name": food, "length": foodLength}, {"name": culture, "length": cultureLength}, {"name": tradition, "length": traditionLength}]
+    if category_id:
+        blogs = Category.objects.get(id=category_id).blog_set.all()
+    elif writer:
+        blogs = Blog.objects.filter(
+            writer__username=writer).all().order_by("-pk")
+    else:
+        blogs = Blog.objects.all().order_by("-pk")
+
     paginator = Paginator(blogs, 3)
 
     try:
@@ -57,12 +50,11 @@ def home(request):
         except:
             blogsPerPage = paginator.get_page(1)
 
-    return render(request, "main/home.html", {"blogs": blogsPerPage, "categories": categories, "page": page, "popularBlogs": popularBlogs})
+    return render(request, "main/home.html", {"blogs": blogsPerPage, "page": page, "popularBlogs": popularBlogs})
 
 
 @login_required(login_url='loginUser')
 def create_blog(request):
-    categories = Category.objects.all()
     if request.method == "POST":
         title = request.POST['title']
         content = request.POST['content']
@@ -75,14 +67,15 @@ def create_blog(request):
         blog.save()
         return JsonResponse({"message": "Blog created successfully"})
 
-    return render(request, "main/create_blog.html", {"categories": categories})
+    return render(request, "main/create_blog.html")
 
 
 @login_required(login_url='loginUser')
 def user_blog(request):
     user_id = request.user.id
-    # blogs = Blog.objects.filter(userId=user_id).all().order_by("-pk")
-    user = User.objects.filter(id=user_id).first()
+    # blogsnaja = Blog.objects.filter(writer_id=user_id).all().order_by("-pk")
+    # user = User.objects.filter(id=user_id).first()
+    user = get_object_or_404(User, id=user_id)
     blogs = user.blog_set.all()
     return render(request, "main/user_blog.html", {"blogs": blogs})
 
@@ -95,8 +88,8 @@ def get_blog_by_id(request, blogId):
 
 @login_required(login_url='loginUser')
 def update_blog(request, blogId):
-    blog = Blog.objects.get(id=blogId)
-    categories = Category.objects.all()
+    # blog = Blog.objects.get(id=blogId)
+    blog = get_object_or_404(Blog, id=blogId)
     if request.method == "POST":
         blog = Blog.objects.get(id=blogId)
         blog.title = request.POST.get('title')
@@ -108,13 +101,13 @@ def update_blog(request, blogId):
         blog.save()
         return JsonResponse({"message": "Blog updated successfully"})
 
-    return render(request, "main/update_blog.html", {"categories": categories, "blog": blog})
+    return render(request, "main/update_blog.html", {"blog": blog})
 
 
 @login_required(login_url='loginUser')
 def blog_detail(request, blog_id):
     blog = Blog.objects.filter(id=blog_id).first()
-
+    # print(get_object_or_404(Blog, id=blog_id))
     blog.views += 1
     blog.save()
     comments = blog.comment_set.all()
@@ -128,22 +121,22 @@ def delete_blog(request, blogId):
     return redirect("userBlog")
 
 
-@login_required(login_url='loginUser')
-def add_comment(request, blogId):
-    if request.method == "POST":
-        userId = request.user.id
-        comment_message = request.POST.get("comment")
-        comment = Comment.objects.create(
-            user_id=userId, blog_id=blogId, comment=comment_message)
-        comment.save()
-    return redirect(f"/blog-detail/{blogId}")
+# @login_required(login_url='loginUser')
+# def add_comment(request, blogId):
+#     if request.method == "POST":
+#         userId = request.user.id
+#         comment_message = request.POST.get("comment")
+#         comment = Comment.objects.create(
+#             user_id=userId, blog_id=blogId, comment=comment_message)
+#         comment.save()
+#     return redirect(f"/blog-detail/{blogId}")
 
 
-@login_required(login_url='loginUser')
-def delete_comment(request, blog_id, comment_id):
-    comment = Comment.objects.get(id=comment_id)
-    comment.delete()
-    return redirect(f"/blog-detail/{blog_id}")
+# @login_required(login_url='loginUser')
+# def delete_comment(request, blog_id, comment_id):
+#     comment = Comment.objects.get(id=comment_id)
+#     comment.delete()
+#     return redirect(f"/blog-detail/{blog_id}")
 
 
 @login_required(login_url='loginUser')
@@ -180,61 +173,40 @@ def like_blog_detail(request, blogId):
     return redirect(f"/blog-detail/{blogId}")
 
 
-@login_required(login_url='loginUser')
-def blog_filtered_by_category(request, category_id):
-    blogs = Category.objects.get(id=category_id).blog_set.all()
-    food = Category.objects.get(id=1)
-    travel = Category.objects.get(id=2)
-    culture = Category.objects.get(id=3)
-    tradition = Category.objects.get(id=4)
-    foodLength = Category.objects.get(id=1).blog_set.all().count()
-    travelLength = Category.objects.get(id=2).blog_set.all().count()
-    cultureLength = Category.objects.get(id=3).blog_set.all().count()
-    traditionLength = Category.objects.get(id=4).blog_set.all().count()
-    popularBlogs = Blog.objects.all().order_by("-views")[:3]
-    categories = [{"name": travel, "length": travelLength},
-                  {"name": food, "length": foodLength}, {"name": culture, "length": cultureLength}, {"name": tradition, "length": traditionLength}]
-    paginator = Paginator(blogs, 3)
+# @login_required(login_url='loginUser')
+# def blog_filtered_by_category(request, category_id):
+#     blogs = Category.objects.get(id=category_id).blog_set.all()
+#     popularBlogs = Blog.objects.all().order_by("-views")[:3]
 
-    try:
-        page = int(request.GET.get("page"))
-    except:
-        page = 1
+#     paginator = Paginator(blogs, 3)
 
-    try:
-        blogsPerPage = paginator.get_page(page)
-    except:
-        blogsPerPage = paginator.get_page(1)
+#     try:
+#         page = int(request.GET.get("page"))
+#     except:
+#         page = 1
 
-    return render(request, "main/home.html", {"blogs": blogsPerPage, "categories": categories, "page": page, "popularBlogs": popularBlogs})
+#     try:
+#         blogsPerPage = paginator.get_page(page)
+#     except:
+#         blogsPerPage = paginator.get_page(1)
+
+#     return render(request, "main/home.html", {"blogs": blogsPerPage, "page": page, "popularBlogs": popularBlogs})
 
 
-@login_required(login_url='loginUser')
-def blog_filtered_by_writer(request, writer):
-    blogs = Blog.objects.filter(
-        writer=writer).all().order_by("-pk")
-    paginator = Paginator(blogs, 3)
-    popularBlogs = Blog.objects.all().order_by("-views")[:3]
-    food = Category.objects.get(id=1)
-    travel = Category.objects.get(id=2)
-    culture = Category.objects.get(id=3)
-    tradition = Category.objects.get(id=4)
-    foodLength = Category.objects.get(id=1).blog_set.all().count()
-    travelLength = Category.objects.get(id=2).blog_set.all().count()
-    cultureLength = Category.objects.get(id=3).blog_set.all().count()
-    traditionLength = Category.objects.get(id=4).blog_set.all().count()
-    popularBlogs = Blog.objects.all().order_by("-views")[:3]
-    categories = [{"name": travel, "length": travelLength},
-                  {"name": food, "length": foodLength}, {"name": culture, "length": cultureLength}, {"name": tradition, "length": traditionLength}]
+# @login_required(login_url='loginUser')
+# def blog_filtered_by_writer(request, writer):
+#     blogs = Blog.objects.filter(
+#         writer=writer).all().order_by("-pk")
+#     paginator = Paginator(blogs, 3)
+#     popularBlogs = Blog.objects.all().order_by("-views")[:3]
+#     try:
+#         page = int(request.GET.get("page"))
+#     except:
+#         page = 1
 
-    try:
-        page = int(request.GET.get("page"))
-    except:
-        page = 1
+#     try:
+#         blogsPerPage = paginator.get_page(page)
+#     except:
+#         blogsPerPage = paginator.get_page(1)
 
-    try:
-        blogsPerPage = paginator.get_page(page)
-    except:
-        blogsPerPage = paginator.get_page(1)
-
-    return render(request, "main/home.html", {"blogs": blogsPerPage, "categories": categories, "page": page, "popularBlogs": popularBlogs})
+#     return render(request, "main/home.html", {"blogs": blogsPerPage, "page": page, "popularBlogs": popularBlogs})

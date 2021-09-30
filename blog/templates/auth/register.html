@@ -1,11 +1,22 @@
 {% extends 'layout/auth.html' %}
+
 {% load static %}
+
+{% load crispy_forms_tags %}
 
 {% block title %}
 <link rel="stylesheet" href="{% static 'style/register.css' %}">
 {% endblock title %}
 
 {% block content %}
+
+<style>
+    .form-group{
+        margin-bottom: 10px;
+    }
+</style>
+
+
 <div class="container">
     {% if messages %}
     {% for message in messages %}
@@ -25,6 +36,8 @@
     <form action="{% url 'registerUser' %}" method="POST" class="p-4 bg-success bg-opacity-10">
         {% csrf_token %}
         <h3 class="text-center mb-4">Register</h3>
+        {{form | crispy}}
+        <!-- <h3 class="text-center mb-4">Register</h3>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="username" class="form-control" id="username" name="username" required>
@@ -40,7 +53,7 @@
         <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirm Password</label>
             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-        </div>
+        </div> -->
         <a href="{% url 'loginUser' %}">Already have an account?</a>
         <button type="submit" class="btn btn-success w-100">Register</button>
     </form>

@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from category.models import Category
 from django.contrib.auth.models import User
 
@@ -19,18 +20,11 @@ class Blog(models.Model):
         return self.title
 
     class Meta:
+        db_table = "blog"
         ordering = ['-created_at']
 
+    def get_blogs_by_writer(self):
+        return reverse('get_blogs_by_writer',args=[self.writer.username])
 
-class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
-    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True)
-    comment = models.CharField(max_length=250)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.userId
 
-    class Meta:
-        ordering = ['-created_at']

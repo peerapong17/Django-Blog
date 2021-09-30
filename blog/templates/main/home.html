@@ -9,6 +9,7 @@
 {% block content %}
 
 <div class="container">
+    {% if blogs %}
     <div class="carousel-container">
         <div id="carousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner h-100">
@@ -31,15 +32,16 @@
             </button>
         </div>
     </div>
+    {% endif %}
     <div class="row mt-5">
         <div class="col-6 col-md-3 col-sm-6 mb-3 col-lg-2">
             <ul class="list-group">
                 {% for category in categories %}
-                <a href="{% url 'blogFilteredByCategory' category.name.id %}"
+                <a href="{{category.get_blogs_by_category}}"
                     class="list-group-item d-flex justify-content-between align-items-center">
                     {{category.name}}
-                    {% if category.length %}
-                    <span class="badge bg-primary rounded-pill">{{category.length}}</span>
+                    {% if category.blog_length_in_this_category %}
+                    <span class="badge bg-primary rounded-pill">{{category.blog_length_in_this_category}}</span>
                     {% endif %}
                 </a>
                 {% endfor %}
@@ -62,7 +64,7 @@
                             </div>
                             <hr>
                             <p class="card-text">{{blog.content|slice:"0:70"}}</p>
-                            <a href="{% url 'blogFilteredByCategory' blog.category_id %}"
+                            <a href="{% url 'get_blogs_by_category' blog.category_id %}"
                                 class="badge bg-info mb-2">{{blog.category.name}}</a>
                             <div class="card-actions d-flex justify-content-between align-items-center">
                                 <a href="{% url 'blogDetail' blog.id %}" class="btn btn-secondary">See More...</a>
@@ -84,9 +86,7 @@
                                         <i class="far fa-thumbs-up">
                                         </i>
                                     </a>
-                                    {% if blog.likes %}
                                     <span>{{blog.likes|length}} like this blog</span>
-                                    {% endif %}
                                 </div>
                                 {% endif %}
                             </div>

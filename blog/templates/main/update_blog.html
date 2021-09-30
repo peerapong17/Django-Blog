@@ -29,7 +29,7 @@
                         name="content"></textarea>
                 </div>
                 <select id="category" class="form-select mb-3" name="category">
-                    <option disabled>Category</option>
+                    <option disabled>--Category--</option>
                     {% for category in categories %}
                     <option value="{{category.id}}">{{category.name}}</option>
                     {% endfor %}
