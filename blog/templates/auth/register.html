@@ -1,4 +1,4 @@
-{% extends 'layout/auth.html' %}
+{% extends 'layout/auth_base.html' %}
 
 {% load static %}
 
@@ -11,7 +11,7 @@
 {% block content %}
 
 <style>
-    .form-group{
+    .form-group {
         margin-bottom: 10px;
     }
 </style>
@@ -20,40 +20,16 @@
 <div class="container">
     {% if messages %}
     {% for message in messages %}
-    {% if message.tags == "success" %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
         {{message}}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    {% else %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{message}}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endif %}
     {% endfor %}
     {% endif %}
     <form action="{% url 'registerUser' %}" method="POST" class="p-4 bg-success bg-opacity-10">
         {% csrf_token %}
         <h3 class="text-center mb-4">Register</h3>
         {{form | crispy}}
-        <!-- <h3 class="text-center mb-4">Register</h3>
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="username" class="form-control" id="username" name="username" required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-        </div>
-        <div class="mb-3">
-            <label for="confirmPassword" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-        </div> -->
         <a href="{% url 'loginUser' %}">Already have an account?</a>
         <button type="submit" class="btn btn-success w-100">Register</button>
     </form>

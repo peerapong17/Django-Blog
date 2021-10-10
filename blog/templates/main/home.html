@@ -63,7 +63,7 @@
                                 </div>
                             </div>
                             <hr>
-                            <p class="card-text">{{blog.content|slice:"0:70"}}</p>
+                            <p class="card-text">{{blog.content|slice:":70"}}</p>
                             <a href="{% url 'get_blogs_by_category' blog.category_id %}"
                                 class="badge bg-info mb-2">{{blog.category.name}}</a>
                             <div class="card-actions d-flex justify-content-between align-items-center">
@@ -108,11 +108,7 @@
                 <li class="page-item disabled"><a class="page-link" aria-disabled="true">Previous</a></li>
                 {% endif %}
                 {% for page_number in blogs.paginator.page_range %}
-                {% if page_number != page %}
-                <li class="page-item"><a class="page-link px-4" href="?page={{page_number}}">{{page_number}}</a></li>
-                {% else %}
-                <li class="page-item disabled"><a class="page-link px-4" aria-disabled="true">{{page_number}}</a></li>
-                {% endif %}
+                <li class="page-item {% if page_number == page %} active {% endif %}"><a class="page-link px-4" href="?page={{page_number}}">{{page_number}}</a></li>
                 {% endfor %}
                 {% if blogs.has_next %}
                 <li class="page-item"><a class="page-link" href="?page={{blogs.next_page_number}}">Next</a></li>

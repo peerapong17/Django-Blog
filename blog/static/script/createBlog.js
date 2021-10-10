@@ -30,7 +30,7 @@ form.addEventListener("submit", (e) => {
   fd.append("category", category.value);
   fd.append("image", imageFile.files[0]);
   fd.append("csrfmiddlewaretoken", csrf[0].value);
-  fetch("http://127.0.0.1:8000/create-blog", {
+  fetch("http://127.0.0.1:8000/blog/create-blog", {
     method: "POST",
     body: fd,
   })

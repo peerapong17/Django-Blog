@@ -11,26 +11,22 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('category', '0001_initial'),
+        ('blog', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Blog',
+            name='Comment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=250)),
-                ('content', models.TextField()),
-                ('image', models.ImageField(blank=True, upload_to='uploads/')),
-                ('likes', models.JSONField(default=[])),
-                ('views', models.IntegerField(default=1)),
+                ('comment', models.CharField(max_length=250)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='category.category')),
-                ('writer', models.ForeignKey(default='Anonymous', on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                ('blog', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='blog.blog')),
+                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'db_table': 'blog',
+                'db_table': 'comment',
                 'ordering': ['-created_at'],
             },
         ),

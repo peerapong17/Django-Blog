@@ -35,9 +35,14 @@ def home(request, category_id=None, writer=None):
 
     if request.method == "POST":
         searchInput = (request.POST['search'])
-        allBlogs = Blog.objects.all()
-        blogs = [blog for blog in allBlogs if searchInput.lower()
-                 in blog.title.lower()]
+        # basic way
+        # allBlogs = Blog.objects.all()
+        # blogs = [blog for blog in allBlogs if searchInput.lower()
+        #          in blog.title.lower()]
+
+        # another way
+        blogs = Blog.objects.filter(title__contains=searchInput).all()
+
         paginator = Paginator(blogs, 3)
 
         try:
@@ -48,7 +53,8 @@ def home(request, category_id=None, writer=None):
         try:
             blogsPerPage = paginator.get_page(page)
         except:
-            blogsPerPage = paginator.get_page(1)
+            # blogsPerPage = paginator.get_page(1)
+            blogsPerPage = paginator.get_page(paginator.num_pages)
 
     return render(request, "main/home.html", {"blogs": blogsPerPage, "page": page, "popularBlogs": popularBlogs})
 
@@ -121,24 +127,6 @@ def delete_blog(request, blogId):
     return redirect("userBlog")
 
 
-# @login_required(login_url='loginUser')
-# def add_comment(request, blogId):
-#     if request.method == "POST":
-#         userId = request.user.id
-#         comment_message = request.POST.get("comment")
-#         comment = Comment.objects.create(
-#             user_id=userId, blog_id=blogId, comment=comment_message)
-#         comment.save()
-#     return redirect(f"/blog-detail/{blogId}")
-
-
-# @login_required(login_url='loginUser')
-# def delete_comment(request, blog_id, comment_id):
-#     comment = Comment.objects.get(id=comment_id)
-#     comment.delete()
-#     return redirect(f"/blog-detail/{blog_id}")
-
-
 @login_required(login_url='loginUser')
 def like_blog(request, blogId):
     blog = Blog.objects.get(id=blogId)
@@ -172,41 +160,5 @@ def like_blog_detail(request, blogId):
         blog.save()
     return redirect(f"/blog-detail/{blogId}")
 
-
-# @login_required(login_url='loginUser')
-# def blog_filtered_by_category(request, category_id):
-#     blogs = Category.objects.get(id=category_id).blog_set.all()
-#     popularBlogs = Blog.objects.all().order_by("-views")[:3]
-
-#     paginator = Paginator(blogs, 3)
-
-#     try:
-#         page = int(request.GET.get("page"))
-#     except:
-#         page = 1
-
-#     try:
-#         blogsPerPage = paginator.get_page(page)
-#     except:
-#         blogsPerPage = paginator.get_page(1)
-
-#     return render(request, "main/home.html", {"blogs": blogsPerPage, "page": page, "popularBlogs": popularBlogs})
-
-
-# @login_required(login_url='loginUser')
-# def blog_filtered_by_writer(request, writer):
-#     blogs = Blog.objects.filter(
-#         writer=writer).all().order_by("-pk")
-#     paginator = Paginator(blogs, 3)
-#     popularBlogs = Blog.objects.all().order_by("-views")[:3]
-#     try:
-#         page = int(request.GET.get("page"))
-#     except:
-#         page = 1
-
-#     try:
-#         blogsPerPage = paginator.get_page(page)
-#     except:
-#         blogsPerPage = paginator.get_page(1)
-
-#     return render(request, "main/home.html", {"blogs": blogsPerPage, "page": page, "popularBlogs": popularBlogs})
+def test(request):
+    return render('test/testnaja.html')
