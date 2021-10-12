@@ -1,26 +1,113 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid px-4">
-      <a class="navbar-brand" href="{% url 'home' %}">BLOG</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-link" href="{% url 'createBlog' %}">create</a>
-          <a class="nav-link" href="{% url 'userBlog' %}">my blog</a>
-        </div>
-        <div style="flex: 1;"></div>
+<!-- <nav class="navbar navbar-expand-lg navbar-light bg-success bg-opacity-25 shadow-sm">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100">
+        <a class="navbar-brand" href="#"><i class="fas fa-home"></i></a>
+        <div class="flex-grow-1"></div>
         <form class="d-flex me-3" method="POST" action="{% url 'home' %}">
           {% csrf_token %}
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
-        {% if request.user.is_authenticated and request.user.username %}
-          <h4 class="text-white mx-3 m-0">Hello, {{request.user.username}}</h4>
-        {% endif %}
-        <a href="{% url 'logoutUser' %}" class="btn btn-danger"
-          onclick="return window.confirm('Are you sure?')">Logout</a>
-      </div>
+
+        <li class="nav-item dropdown ms-2 ">
+          <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-user"></i>
+            <span class="h5">{{request.user.username}}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'userBlog' %}" class="dropdown-item">My blogs</a></li>
+            <li><a class="dropdown-item" href="{% url 'createBlog' %}" class="dropdown-item">Create blog</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a href="{% url 'logoutUser' %}" class="dropdown-item"
+                onclick="return window.confirm('Are you sure?')">Logout<i class="fas fa-sign-out-alt ms-2"></i></a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav> -->
+<!-- <nav class="navbar navbar-expand-lg navbar-light bg-success bg-opacity-25 shadow-sm">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="{% url 'home' %}">BLOG</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link" href="{% url 'createBlog' %}">create</a>
+        <a class="nav-link" href="{% url 'userBlog' %}">my blog</a>
+      </div>
+      <div style="flex: 1;"></div>
+      <form class="d-flex me-3" method="POST" action="{% url 'home' %}">
+        {% csrf_token %}
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+      <a class="nav-link text-dark" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+        <i class="fas fa-user"></i>
+        <span class="h5">{{request.user.username}}</span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="{% url 'userBlog' %}" class="dropdown-item">My blogs</a></li>
+        <li><a class="dropdown-item" href="{% url 'createBlog' %}" class="dropdown-item">Create blog</a></li>
+        <li><a class="dropdown-item" href="#">Settings</a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a href="{% url 'logoutUser' %}" class="dropdown-item"
+            onclick="return window.confirm('Are you sure?')">Logout<i class="fas fa-sign-out-alt ms-2"></i></a></li>
+      </ul>
+    </div>
+  </div>
+</nav> -->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-success bg-opacity-25 shadow-sm">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+      aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+      <a class="navbar-brand" href="{% url 'home' %}"><i class="fas fa-home"></i></a>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'createBlog' %}">create</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'userBlog' %}">my blog</a>
+
+        </li>
+        <div class="flex-grow-1"></div>
+        <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+        <li class="nav-item dropdown ms-2 ">
+          <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-user"></i>
+            <span class="h5">{{request.user.username}}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'userBlog' %}" class="dropdown-item">My blogs</a></li>
+            <li><a class="dropdown-item" href="{% url 'createBlog' %}" class="dropdown-item">Create blog</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a href="{% url 'logoutUser' %}" class="dropdown-item"
+                onclick="return window.confirm('Are you sure?')">Logout<i class="fas fa-sign-out-alt ms-2"></i></a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

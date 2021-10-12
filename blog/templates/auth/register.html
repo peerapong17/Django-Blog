@@ -12,7 +12,7 @@
 
 <style>
     .form-group {
-        margin-bottom: 10px;
+        margin-bottom: 17px;
     }
 </style>
 
@@ -26,7 +26,7 @@
     </div>
     {% endfor %}
     {% endif %}
-    <form action="{% url 'registerUser' %}" method="POST" class="p-4 bg-success bg-opacity-10">
+    <form action="{% url 'registerUser' %}" method="POST" class="p-4 bg-success bg-opacity-10 shadow-sm rounded">
         {% csrf_token %}
         <h3 class="text-center mb-4">Register</h3>
         {{form | crispy}}
