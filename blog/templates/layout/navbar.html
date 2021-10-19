@@ -91,6 +91,19 @@
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+        {% if request.user.is_staff %}
+        <li class="nav-item dropdown ms-3">
+          <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class="fas fa-tasks"></i>
+            Management
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'blog_admin' %}">Blog</a></li>
+            <li><a class="dropdown-item" href="{% url 'categories' %}">Category</a></li>
+          </ul>
+        </li>
+        {% endif %}
         <li class="nav-item dropdown ms-2 ">
           <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
             <i class="fas fa-user"></i>

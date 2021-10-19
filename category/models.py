@@ -18,3 +18,9 @@ class Category(models.Model):
 
     def get_blogs_by_category(self):
         return reverse('get_blogs_by_category',args=[self.id])
+
+    def update_category(self):
+        return reverse('update_category',args=[self.id])
+
+    def delete_category(self):
+        return reverse('delete_category',args=[self.id])

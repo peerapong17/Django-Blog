@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
 from django.core import serializers as core_serializers
+from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -60,16 +61,25 @@ def home(request, category_id=None, writer=None):
 
 
 @login_required(login_url='loginUser')
+def blogAdmin(request):
+    return render(request, "blog-admin/index.html")
+
+
+@login_required(login_url='loginUser')
 def create_blog(request):
+    fs = FileSystemStorage()
+
     if request.method == "POST":
         title = request.POST['title']
         content = request.POST['content']
-        image = request.FILES['image']
+        imageFile = request.FILES['image']
         category = request.POST['category']
         writer_id = request.user.id
+        img_url = "uploads/"+imageFile.name
+        fs.save(img_url, imageFile)
 
         blog = Blog.objects.create(
-            title=title, content=content, image=image, category_id=category, writer_id=writer_id)
+            title=title, content=content, image=img_url, category_id=category, writer_id=writer_id)
         blog.save()
         return JsonResponse({"message": "Blog created successfully"})
 
@@ -111,6 +121,33 @@ def update_blog(request, blogId):
 
 
 @login_required(login_url='loginUser')
+def updateBlogAdmin(request, blogId):
+    fs = FileSystemStorage()
+    blog = get_object_or_404(Blog, id=blogId)
+    if request.method == "POST":
+        blog.title = request.POST.get('title')
+        blog.content = request.POST.get('content')
+        blog.category_id = request.POST['category']
+        print(request.POST['category'])
+
+        if request.FILES:
+            imageFile = request.FILES['image']
+
+            fs.delete(str(blog.image))
+
+            img_url = "uploads/"+imageFile.name
+            fs.save(img_url, imageFile)
+
+            blog.image = img_url
+
+        blog.save()
+
+        return redirect("blog_admin")
+
+    return render(request, "blog-admin/update.html", {"blog": blog})
+
+
+@login_required(login_url='loginUser')
 def blog_detail(request, blog_id):
     blog = Blog.objects.filter(id=blog_id).first()
     # print(get_object_or_404(Blog, id=blog_id))
@@ -122,7 +159,9 @@ def blog_detail(request, blog_id):
 
 @login_required(login_url='loginUser')
 def delete_blog(request, blogId):
+    fs = FileSystemStorage()
     blog = Blog.objects.get(id=blogId)
+    fs.delete(str(blog.image))
     blog.delete()
     return redirect("userBlog")
 
@@ -159,6 +198,7 @@ def like_blog_detail(request, blogId):
         blog.likes.append(userId)
         blog.save()
     return redirect(f"/blog-detail/{blogId}")
+
 
 def test(request):
     return render('test/testnaja.html')
