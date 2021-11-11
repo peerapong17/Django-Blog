@@ -1,9 +1,10 @@
-{% extends 'layout/auth_base.html' %}
+{% extends 'layout/../layout/auth_base.html' %}
+{% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% load static %}
 
 {% block title %}
-<link rel="stylesheet" href="{% static 'style/login.css' %}">
+<link rel="stylesheet" href="{% static 'styles/login.css' %}">
 {% endblock title %}
 
 {% block content %}
@@ -27,11 +28,11 @@
     </div>
     {% endfor %}
     {% endif %}
-    <form action="{% url 'loginUser' %}" method="POST" class="p-4 bg-primary bg-opacity-10 shadow-sm rounded">
+    <form action="{% url 'login' %}" method="POST" class="p-4 bg-primary bg-opacity-10 shadow-sm rounded">
         {% csrf_token %}
         <h3 class="text-center mb-4">Login</h3>
         {{form | crispy}}
-        <a href="{% url 'registerUser' %}">Don't have an account?</a>
+        <a href="{% url 'register' %}">Don't have an account?</a>
         <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
 </div>

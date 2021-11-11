@@ -10,7 +10,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 
-@login_required(login_url='loginUser')
+
+@login_required(login_url="login")
 def home(request, category_id=None, writer=None):
     blogs = False
     popularBlogs = Blog.objects.all().order_by("-views")[:3]
@@ -36,7 +37,6 @@ def home(request, category_id=None, writer=None):
 
     if request.method == "POST":
         searchInput = (request.POST['search'])
-        # basic way
         # allBlogs = Blog.objects.all()
         # blogs = [blog for blog in allBlogs if searchInput.lower()
         #          in blog.title.lower()]
@@ -57,17 +57,16 @@ def home(request, category_id=None, writer=None):
             # blogsPerPage = paginator.get_page(1)
             blogsPerPage = paginator.get_page(paginator.num_pages)
 
-    return render(request, "main/home.html", {"blogs": blogsPerPage, "page": page, "popularBlogs": popularBlogs})
+    return render(request, "main/index.html", {"blogs": blogsPerPage, "page": page, "popularBlogs": popularBlogs})
 
 
-@login_required(login_url='loginUser')
+@login_required(login_url='login')
 def blogAdmin(request):
     return render(request, "blog-admin/index.html")
 
 
-@login_required(login_url='loginUser')
+@login_required(login_url='login')
 def create_blog(request):
-    fs = FileSystemStorage()
 
     if request.method == "POST":
         title = request.POST['title']
@@ -75,7 +74,8 @@ def create_blog(request):
         imageFile = request.FILES['image']
         category = request.POST['category']
         writer_id = request.user.id
-        img_url = "uploads/"+imageFile.name
+        fs = FileSystemStorage()
+        img_url = "uploads/" + imageFile.name
         fs.save(img_url, imageFile)
 
         blog = Blog.objects.create(
@@ -83,10 +83,10 @@ def create_blog(request):
         blog.save()
         return JsonResponse({"message": "Blog created successfully"})
 
-    return render(request, "main/create_blog.html")
+    return render(request, "main/create.html")
 
 
-@login_required(login_url='loginUser')
+@login_required(login_url='login')
 def user_blog(request):
     user_id = request.user.id
     # blogsnaja = Blog.objects.filter(writer_id=user_id).all().order_by("-pk")
@@ -96,13 +96,19 @@ def user_blog(request):
     return render(request, "main/user_blog.html", {"blogs": blogs})
 
 
-def get_blog_by_id(request, blogId):
+def get_blogs(request):
     blog = Blog.objects.all()
     data = core_serializers.serialize('json', blog)
     return HttpResponse(data, content_type="application/json")
 
 
-@login_required(login_url='loginUser')
+def get_blog(request, blog_id):
+    blog = Blog.objects.get(id=blog_id)
+    data = core_serializers.serialize('json', [blog])
+    return HttpResponse(data, content_type="application/json")
+
+
+@login_required(login_url='login')
 def update_blog(request, blogId):
     # blog = Blog.objects.get(id=blogId)
     blog = get_object_or_404(Blog, id=blogId)
@@ -117,10 +123,10 @@ def update_blog(request, blogId):
         blog.save()
         return JsonResponse({"message": "Blog updated successfully"})
 
-    return render(request, "main/update_blog.html", {"blog": blog})
+    return render(request, "main/update.html", {"blog": blog})
 
 
-@login_required(login_url='loginUser')
+@login_required(login_url='login')
 def updateBlogAdmin(request, blogId):
     fs = FileSystemStorage()
     blog = get_object_or_404(Blog, id=blogId)
@@ -135,7 +141,7 @@ def updateBlogAdmin(request, blogId):
 
             fs.delete(str(blog.image))
 
-            img_url = "uploads/"+imageFile.name
+            img_url = "uploads/" + imageFile.name
             fs.save(img_url, imageFile)
 
             blog.image = img_url
@@ -147,17 +153,17 @@ def updateBlogAdmin(request, blogId):
     return render(request, "blog-admin/update.html", {"blog": blog})
 
 
-@login_required(login_url='loginUser')
+@login_required(login_url='login')
 def blog_detail(request, blog_id):
     blog = Blog.objects.filter(id=blog_id).first()
     # print(get_object_or_404(Blog, id=blog_id))
     blog.views += 1
     blog.save()
-    comments = blog.comment_set.all()
-    return render(request, "main/blog_detail.html", {"blog": blog, "comments": comments})
+    comments = blog.comment_set.all().order_by("created_at")
+    return render(request, "main/detail.html", {"blog": blog, "comments": comments})
 
 
-@login_required(login_url='loginUser')
+@login_required(login_url='login')
 def delete_blog(request, blogId):
     fs = FileSystemStorage()
     blog = Blog.objects.get(id=blogId)
@@ -166,9 +172,9 @@ def delete_blog(request, blogId):
     return redirect("userBlog")
 
 
-@login_required(login_url='loginUser')
-def like_blog(request, blogId):
-    blog = Blog.objects.get(id=blogId)
+@login_required(login_url='login')
+def like_blog(request, blog_id):
+    blog = Blog.objects.get(id=blog_id)
     userId = request.user.id
     if len(blog.likes) != 0:
         if userId in blog.likes:
@@ -177,15 +183,23 @@ def like_blog(request, blogId):
         else:
             blog.likes.append(userId)
         blog.save()
+
+        json_decoded = core_serializers.serialize("json", [blog])
+        return HttpResponse(json_decoded, content_type="application/json")
+        # return JsonResponse(blog, safe=False)
+
     else:
         blog.likes.append(userId)
         blog.save()
-    return redirect("home")
+
+        json_decoded = core_serializers.serialize("json", [blog])
+        return HttpResponse(json_decoded, content_type="application/json")
+        # return JsonResponse(blog, safe=False)
 
 
-@login_required(login_url='loginUser')
-def like_blog_detail(request, blogId):
-    blog = Blog.objects.get(id=blogId)
+@login_required(login_url='login')
+def like_blog_detail(request, blog_id):
+    blog = Blog.objects.get(id=blog_id)
     userId = request.user.id
     if len(blog.likes) != 0:
         if userId in blog.likes:
@@ -194,10 +208,14 @@ def like_blog_detail(request, blogId):
         else:
             blog.likes.append(userId)
         blog.save()
+        json_decoded = core_serializers.serialize("json", [blog])
+        return HttpResponse(json_decoded, content_type="application/json")
     else:
         blog.likes.append(userId)
         blog.save()
-    return redirect(f"/blog-detail/{blogId}")
+        json_decoded = core_serializers.serialize("json", [blog])
+        return HttpResponse(json_decoded, content_type="application/json")
+    # return redirect(f"/blog-detail/{blog_id}")
 
 
 def test(request):

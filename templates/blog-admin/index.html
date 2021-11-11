@@ -1,4 +1,4 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/../layout/base.html' %}
 {% load static %}
 {% load humanize %}
 {% block content%}
@@ -13,32 +13,34 @@
             </div>
             {% endfor %}
             {% endif %}
-            <div class="d-flex justify-content-between">
-                <h3>Category List</h3>
-                <a href="{% url 'create_category' %}" class="btn btn-success">
-                    <i class="fas fa-plus"></i>
-                    Create category
-                </a>
-            </div>
+            <h3>Blog List</h3>
             <table class="table text-center align-middle table-bordered table-striped mt-3">
                 <thead>
                     <tr>
-                        <td class="w-50 fw-bold">Category Name</td>
-                        <td class="w-50"></td>
+                        <td></td>
+                        <td class="fw-bold">Blog Name</td>
+                        <td>created At</td>
+                        <td></td>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for category in categories %}
+                    {% for blog in blogsAdmin %}
                     <tr>
-                        <td class="w-50 text-left">
-                            {{category.name}}
+                        <td>
+                            <img src="{{blog.image.url}}" alt="{{blog.title}}" width="80" height="80">
                         </td>
-                        <td class="w-50">
-                            <a href="{{category.update_category}}" asp-controller="Category" class="btn btn-primary mx-2">
+                        <td>
+                            {{blog.title}}
+                        </td>
+                        <td>
+                            {{blog.created_at}}
+                        </td>
+                        <td>
+                            <a href="{{blog.update_blog_admin}}" asp-controller="Category" class="btn btn-primary mx-2">
                                 <i class="fas fa-edit"></i>
                                 Edit
                             </a>
-                            <a href="{{category.delete_category}}" onclick="return window.confirm('Are you sure?')" class="btn btn-danger mx-2">
+                            <a href="{{blog.delete_blog}}" onclick="return window.confirm('Are you sure?')" class="btn btn-danger mx-2">
                                 <i class="far fa-trash-alt"></i>
                                 Delete
                             </a>

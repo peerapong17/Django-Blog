@@ -1,5 +1,5 @@
 from django.contrib import messages
-from .forms import SignUpForm
+from authentication.forms import SignUpForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
@@ -12,7 +12,7 @@ def register_user(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Create account success")
-            return redirect("loginUser")
+            return redirect("login")
 
     return render(request, "auth/register.html", {"form": form})
 
@@ -29,11 +29,12 @@ def login_user(request):
                 login(request, user)
                 return redirect('home')
             else:
-                return redirect('registerUser')
+                return redirect('register_user')
 
     return render(request, "auth/login.html", {"form": form})
 
 
 def logout_user(request):
     logout(request)
-    return redirect('loginUser')
+    print(logout(request))
+    return redirect('login')

@@ -1,0 +1,194 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+    <link rel="stylesheet" href="{% static 'styles/blog_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <style>
+        .fa-thumbs-up {
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="container">
+        <div hidden id="user-id">{{ request.user.id }}</div>
+        <div class="card-box col-12 col-md-6 col-sm-12 col-lg-8 mt-3">
+            <div class="card" style="width: 100%;">
+                <img src="{{ blog.image.url }}" class="card-img-top" alt="japan">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title m-0">{{ blog.title }}</h4>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <i class="fas fa-eye "></i>
+                            <span class="ms-2 mb-1">{{ blog.views | intcomma }}</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <p class="card-text">{{ blog.content }}</p>
+                    <a href="{{ blog.category.get_blogs_by_category }}"
+                       class="badge bg-info">{{ blog.category }}</a>
+                    <div class="d-flex justify-content-between m-0  align-items-center">
+                        <a href="{{ blog.get_blogs_by_writer }}"
+                           class="card-text m-0 d-flex align-items-center">By <strong> {{ blog.writer }}</strong></a>
+                        <!-- <a href="{% url 'get_blogs_by_writer' blog.writer.username %}"
+                        class="card-text m-0 d-flex align-items-center">By <strong> {{blog.writer}}</strong></a> -->
+                        <div class="d-flex justify-content-center">
+                            <p class="card-text m-0 d-flex align-items-center">{{ blog.created_at }}</p>
+                            {% if request.user.id in blog.likes %}
+                                <i class="isLiked fas fa-thumbs-up mx-2" onclick="addLike({{ blog.id }})"></i>
+                            {% else %}
+                                <i class="fas fa-thumbs-up mx-2" onclick="addLike({{ blog.id }})"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-floating">
+                <input type="text" class="form-control" id="comment" name="comment" placeholder="comment">
+                <label for="comment">Comment</label>
+                <button type="submit" class="btn btn-primary mt-2 float-end" onclick="addComment({{ blog.id }})">Add
+                    Comment
+                </button>
+                <div class="clearfix mb-3"></div>
+            </div>
+            <div class="comment-section">
+                {% for comment in comments %}
+                    <div class="card border-dark mb-3 comment-card" id="{{ comment.id }}">
+                        <div class="card-header">{{ comment.user.username }}</div>
+                        <div class="card-body text-dark d-flex justify-content-between align-items-center">
+                            <p class="card-text">{{ comment.comment }}</p>
+                            {% if comment.user.username == user.username %}
+                                <div class="d-flex">
+                                    <a class="btn btn-primary">Update</a>
+                                    <button class="btn btn-danger ms-1" onclick="deleteComment({{ comment.id }})">Delete
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let icon = document.querySelector(".fa-thumbs-up")
+        let userId = document.getElementById("user-id").innerText
+        let commentInput = document.getElementById("comment")
+        let commentSection = document.querySelector(".comment-section")
+
+        const addLike = (blogId) => {
+            fetch(`http://127.0.0.1:8000/blog/like/blog/${blogId}`)
+                .then(res => res.json())
+                .then(res => {
+                    let likes = res[0]["fields"]["likes"]
+
+                    if (likes.includes(parseInt(userId))) {
+                        icon.classList.add("isLiked")
+                    } else {
+                        icon.classList.remove("isLiked")
+
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+
+        const addComment = (blogId) => {
+            const fd = new FormData();
+            fd.append("comment", commentInput.value)
+            fetch(`http://127.0.0.1:8000/comment/${blogId}`, {
+                method: "POST",
+                body: fd,
+                headers: {'X-CSRFToken': '{{ csrf_token }}'}
+            })
+                .then(res => res.json())
+                .then(res => {
+                    commentInput.value = ''
+                    let id = res['id']
+                    let username = res['user']
+                    let comment = res['comment']
+                    let created_at = res['created_at']
+
+                    let div = document.createElement("div")
+
+                    div.id = id
+
+                    div.innerHTML = `
+                        <div class="card border-dark mb-3">
+                            <div class="card-header">${username}</div>
+                                <div class="card-body text-dark d-flex justify-content-between align-items-center">
+                                    <p class="card-text">${comment}</p>
+                                    <div class="d-flex">
+                                        <a class="btn btn-primary">Update</a>
+                                        <a class="btn btn-danger ms-1">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+
+                    commentSection.append(div)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+
+        const deleteComment = (comment_id) => {
+            console.log(comment_id)
+            fetch(`http://127.0.0.1:8000/comment/delete/${comment_id}`)
+                .then(res => res.json())
+                .then(res => {
+                        commentSection.children
+
+                        for (let i = 0; i < commentSection.children.length; i++) {
+                            let child = commentSection.children[i];
+                            child.remove()
+                        }
+
+                        if (res === "success") {
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Comment deleted successfully'
+                            })
+                        }
+                    }
+                )
+                .catch(err => {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Could not delete comment'
+                    })
+                })
+        }
+
+    </script>
+
+{% endblock content %}

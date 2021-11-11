@@ -24,13 +24,10 @@ class Blog(models.Model):
         ordering = ['-created_at']
 
     def get_blogs_by_writer(self):
-        return reverse('get_blogs_by_writer',args=[self.writer.username])
+        return reverse('get_blogs_by_writer', args=[self.writer.username])
 
     def update_blog_admin(self):
-        return reverse('update_blog_admin',args=[self.id])
+        return reverse('update_blog_admin', args=[self.id])
 
     def delete_blog(self):
-        return reverse('deleteBlog',args=[self.id])
-
-
-
+        return reverse('deleteBlog', args=[self.id])

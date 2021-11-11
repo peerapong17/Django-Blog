@@ -1,8 +1,13 @@
 i {
     font-size: 23px;
+    cursor: pointer;
 }
 
-.isliked {
+i:hover {
+    transform: scale(1.03);
+}
+
+.isLiked {
     color: #3ab0ff;
 }
 
